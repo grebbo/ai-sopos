@@ -55,5 +55,38 @@ def index():
                            form={})
 
 
+@app.route('/genera', methods=['POST'])
+def genera():
+    tema = request.form.get('tema', 'random')
+    lunghezza = request.form.get('lunghezza', 'media')
+    parole_chiave = request.form.get('parole_chiave', '')
+    keywords = [k.strip() for k in parole_chiave.split(',') if k.strip()]
+
+    if tema == 'random':
+        tema = random.choice(list(THEMES.keys()))
+
+    try:
+        title, body = generate_story(tema, keywords, lunghezza)
+        filepath = save_story(title, body, tema)
+        filename = os.path.basename(filepath)
+        return redirect(url_for('index', nuova=filename))
+    except EnvironmentError as e:
+        error_msg = str(e)
+    except Exception as e:
+        error_msg = f"Errore durante la generazione: {e}"
+
+    return render_template('index.html',
+                           themes=THEMES,
+                           lengths=list(LENGTHS.keys()),
+                           history=get_history(),
+                           story=None,
+                           error=error_msg,
+                           form={
+                               'tema': request.form.get('tema'),
+                               'lunghezza': lunghezza,
+                               'parole_chiave': parole_chiave,
+                           }), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
