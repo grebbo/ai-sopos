@@ -9,7 +9,8 @@ def test_app_importabile():
 
 
 def test_get_history_vuota(tmp_path):
-    with patch('app.OUTPUT_DIR', str(tmp_path)):
+    nonexistent = str(tmp_path / 'nonexistent')
+    with patch('app.OUTPUT_DIR', nonexistent):
         import app
         assert app.get_history() == []
 
