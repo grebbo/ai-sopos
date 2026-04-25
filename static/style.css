@@ -1,0 +1,88 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #fdf8f0;
+  color: #2c2c2c;
+  line-height: 1.7;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #c8a96e;
+  padding-bottom: 1rem;
+}
+header h1 { font-size: 2rem; color: #5c3d1e; }
+header .subtitle { color: #888; font-style: italic; }
+
+.error {
+  background: #fdecea;
+  border-left: 4px solid #c0392b;
+  padding: .75rem 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+  color: #c0392b;
+}
+
+.form-section { margin-bottom: 2.5rem; }
+
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+legend { font-weight: bold; padding: 0 .5rem; color: #5c3d1e; }
+fieldset label { display: block; margin: .4rem 0; cursor: pointer; }
+fieldset label input { margin-right: .5rem; }
+
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-weight: bold; margin-bottom: .3rem; color: #5c3d1e; }
+.field select,
+.field input[type="text"] {
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+}
+
+button[type="submit"] {
+  background: #5c3d1e;
+  color: #fff;
+  border: none;
+  padding: .75rem 2rem;
+  font-size: 1rem;
+  font-family: inherit;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button[type="submit"]:hover { background: #7a5230; }
+
+.story-section {
+  background: #fff;
+  border: 1px solid #e0cfa8;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+.story-section h2 { color: #5c3d1e; margin-bottom: 1rem; font-size: 1.5rem; }
+.story-body { white-space: pre-wrap; }
+.saved-note { margin-top: 1rem; font-size: .85rem; color: #888; }
+
+.history-section { margin-top: 2rem; }
+.history-section h3 { color: #5c3d1e; margin-bottom: .75rem; }
+.history-section ul { list-style: none; }
+.history-section li { padding: .3rem 0; border-bottom: 1px solid #eee; }
+.history-section a { color: #5c3d1e; text-decoration: none; }
+.history-section a:hover { text-decoration: underline; }
+
+.empty { color: #aaa; font-style: italic; }
