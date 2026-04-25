@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Sopos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI-Sopos</h1>
+      <p class="subtitle">Generatore di Fiabe</p>
+    </header>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <section class="form-section">
+      <form action="/genera" method="post">
+        <fieldset>
+          <legend>Tema</legend>
+          {% for key, desc in themes.items() %}
+          <label>
+            <input type="radio" name="tema" value="{{ key }}"
+              {% if form.get('tema') == key %}checked{% endif %}>
+            {{ key|capitalize }} — <small>{{ desc }}</small>
+          </label>
+          {% endfor %}
+          <label>
+            <input type="radio" name="tema" value="random"
+              {% if not form.get('tema') or form.get('tema') == 'random' %}checked{% endif %}>
+            Casuale
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="lunghezza">Lunghezza</label>
+          <select name="lunghezza" id="lunghezza">
+            {% for l in lengths %}
+            <option value="{{ l }}" {% if form.get('lunghezza', 'media') == l %}selected{% endif %}>
+              {{ l|capitalize }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="parole_chiave">Parole chiave <small>(opzionale)</small></label>
+          <input type="text" name="parole_chiave" id="parole_chiave"
+            placeholder="es. mare, conchiglia, amicizia"
+            value="{{ form.get('parole_chiave', '') }}">
+        </div>
+
+        <button type="submit">Genera</button>
+      </form>
+    </section>
+
+    {% if story %}
+    <section class="story-section">
+      <h2>{{ story.title }}</h2>
+      <div class="story-body">{{ story.body }}</div>
+      <p class="saved-note">Salvata in <code>output/{{ story.filename }}</code></p>
+    </section>
+    {% endif %}
+
+    <section class="history-section">
+      <h3>Ultime fiabe generate</h3>
+      {% if history %}
+      <ul>
+        {% for item in history %}
+        <li>
+          <a href="/storia/{{ item.filename }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty">Nessuna fiaba ancora generata.</p>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>
