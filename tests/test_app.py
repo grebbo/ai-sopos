@@ -128,3 +128,25 @@ def test_post_genera_errore_generico_mostra_messaggio(client):
         })
     assert response.status_code == 500
     assert b'timeout' in response.data
+
+
+def test_get_storia_ritorna_contenuto(client):
+    c, tmp_path = client
+    f = tmp_path / "fiaba_prova.txt"
+    f.write_text(
+        "La lepre e la tartaruga\n========================\n\nC'era una volta...",
+        encoding='utf-8'
+    )
+    response = c.get('/storia/fiaba_prova.txt')
+    assert response.status_code == 200
+    assert b'La lepre e la tartaruga' in response.data
+
+
+def test_get_storia_inesistente_ritorna_404(client):
+    c, _ = client
+    assert c.get('/storia/inesistente.txt').status_code == 404
+
+
+def test_get_storia_non_txt_ritorna_404(client):
+    c, _ = client
+    assert c.get('/storia/script.py').status_code == 404

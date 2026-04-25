@@ -88,5 +88,17 @@ def genera():
                            }), 500
 
 
+@app.route('/storia/<filename>')
+def storia(filename):
+    if not filename.endswith('.txt'):
+        abort(404)
+    path = os.path.join(OUTPUT_DIR, filename)
+    if not os.path.exists(path):
+        abort(404)
+    with open(path, encoding='utf-8') as f:
+        content = f.read()
+    return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+
 if __name__ == '__main__':
     app.run(debug=True)
