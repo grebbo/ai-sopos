@@ -60,7 +60,7 @@
     {% if story %}
     <section class="story-section">
       <h2>{{ story.title }}</h2>
-      <div class="story-body">{{ story.body }}</div>
+      <div class="story-body">{{ story.body|safe }}</div>
       <p class="saved-note">Salvata in <code>output/{{ story.filename }}</code></p>
     </section>
     {% endif %}

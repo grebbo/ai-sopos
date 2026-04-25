@@ -44,3 +44,21 @@ def test_get_route_contiene_form(client):
     assert 'name="tema"' in html
     assert 'name="lunghezza"' in html
     assert 'name="parole_chiave"' in html
+
+
+def test_get_route_con_nuova_mostra_storia(client):
+    c, tmp_path = client
+    f = tmp_path / "fiaba_test.txt"
+    f.write_text(
+        "Il drago biscottino\n====================\n\nC'era una volta un drago.",
+        encoding='utf-8'
+    )
+    html = c.get('/?nuova=fiaba_test.txt').data.decode('utf-8')
+    assert 'Il drago biscottino' in html
+    assert "C'era una volta un drago." in html
+
+
+def test_get_route_con_nuova_inesistente_non_crasha(client):
+    c, _ = client
+    response = c.get('/?nuova=file_inesistente.txt')
+    assert response.status_code == 200
