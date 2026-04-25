@@ -55,7 +55,7 @@ def test_get_route_con_nuova_mostra_storia(client):
     )
     html = c.get('/?nuova=fiaba_test.txt').data.decode('utf-8')
     assert 'Il drago biscottino' in html
-    assert "C'era una volta un drago." in html
+    assert "C&#39;era una volta un drago." in html
 
 
 def test_get_route_con_nuova_inesistente_non_crasha(client):
