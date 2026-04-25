@@ -32,6 +32,8 @@ app = Flask(__name__)
 def index():
     history = get_history()
     nuova = request.args.get('nuova')
+    if nuova:
+        nuova = os.path.basename(nuova)
     story = None
     if nuova:
         path = os.path.join(OUTPUT_DIR, nuova)

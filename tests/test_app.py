@@ -62,3 +62,10 @@ def test_get_route_con_nuova_inesistente_non_crasha(client):
     c, _ = client
     response = c.get('/?nuova=file_inesistente.txt')
     assert response.status_code == 200
+
+
+def test_get_route_nuova_no_path_traversal(client):
+    c, _ = client
+    response = c.get('/?nuova=../app.py')
+    assert response.status_code == 200
+    assert b'def index' not in response.data
