@@ -73,13 +73,13 @@ docker compose up -d --build
 
 ## Deploy su home server con Tailscale
 
-Il container si lega su `0.0.0.0:5000`. Con Tailscale attivo sul server host, l'app è raggiungibile dalla rete Tailscale all'indirizzo:
+Il `docker-compose.yml` usa il pattern sidecar: il container `tailscale` gestisce tutta la rete, e `app` condivide il suo stack di rete (`network_mode: service:tailscale`). Il servizio è esposto sulla rete Tailscale con hostname `ai-sopos` sulla porta 5000:
 
 ```
-http://<tailscale-ip>:5000
+http://ai-sopos:5000
 ```
 
-Trovare l'IP Tailscale del server: `tailscale ip`
+Il file `.env` deve contenere anche `TS_AUTHKEY` (auth key generata dalla Tailscale admin console).
 
 ## Test
 
