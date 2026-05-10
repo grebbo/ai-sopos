@@ -8,6 +8,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <div id="loading-overlay">
+    <div class="loading-content">
+      <p>Sto scrivendo la tua fiaba…</p>
+      <div class="loading-bar-track">
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
     <header>
       <h1>AI-Sopos</h1>
@@ -19,7 +28,7 @@
     {% endif %}
 
     <section class="form-section">
-      <form action="/genera" method="post">
+      <form id="genera-form" action="/genera" method="post">
         <fieldset>
           <legend>Tema</legend>
           {% for key, desc in themes.items() %}
@@ -54,32 +63,21 @@
             value="{{ form.get('parole_chiave', '') }}">
         </div>
 
-        <button type="submit">Genera</button>
+        <div class="form-actions">
+          <button type="submit" id="btn-genera">Genera</button>
+          <a href="/cronologia" class="link-cronologia">Storico fiabe</a>
+        </div>
       </form>
     </section>
-
-    {% if story %}
-    <section class="story-section">
-      <h2>{{ story.title }}</h2>
-      <div class="story-body">{{ story.body }}</div>
-      <p class="saved-note">Salvata in <code>output/{{ story.filename }}</code></p>
-    </section>
-    {% endif %}
-
-    <section class="history-section">
-      <h3>Ultime fiabe generate</h3>
-      {% if history %}
-      <ul>
-        {% for item in history %}
-        <li>
-          <a href="/storia/{{ item.filename }}">{{ item.title }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p class="empty">Nessuna fiaba ancora generata.</p>
-      {% endif %}
-    </section>
   </div>
+
+  <script>
+    document.getElementById('genera-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('btn-genera').disabled = true;
+      document.getElementById('loading-overlay').style.display = 'flex';
+      this.submit();
+    });
+  </script>
 </body>
 </html>

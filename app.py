@@ -30,27 +30,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    history = get_history()
-    nuova = request.args.get('nuova')
-    if nuova:
-        nuova = os.path.basename(nuova)
-    story = None
-    if nuova:
-        path = os.path.join(OUTPUT_DIR, nuova)
-        if os.path.exists(path):
-            with open(path, encoding='utf-8') as f:
-                content = f.read()
-            parts = content.split('\n', 2)
-            story = {
-                'title': parts[0].strip(),
-                'body': parts[2].strip() if len(parts) > 2 else '',
-                'filename': nuova,
-            }
     return render_template('index.html',
                            themes=THEMES,
                            lengths=list(LENGTHS.keys()),
-                           history=history,
-                           story=story,
                            error=None,
                            form={})
 
@@ -78,8 +60,6 @@ def genera():
     return render_template('index.html',
                            themes=THEMES,
                            lengths=list(LENGTHS.keys()),
-                           history=get_history(),
-                           story=None,
                            error=error_msg,
                            form={
                                'tema': request.form.get('tema'),
