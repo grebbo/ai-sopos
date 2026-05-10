@@ -1,14 +1,15 @@
 import os
+import settings
 from openai import OpenAI
 from dotenv import load_dotenv
-from config import MODEL, THEMES, LENGTHS
+from config import MODEL, LENGTHS
 
 load_dotenv()
 
 
 def _build_prompt(theme: str, keywords: list[str], length: str) -> str:
     word_count = LENGTHS[length]
-    theme_description = THEMES[theme]
+    theme_description = settings.SETTINGS["themes"][theme]["prompt"]
     keyword_hint = ""
     if keywords:
         kw_joined = ", ".join(keywords)
@@ -48,10 +49,7 @@ def generate_story(theme: str, keywords: list[str], length: str) -> tuple[str, s
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "Sei un narratore creativo specializzato in fiabe per bambini. "
-                    "Scrivi sempre in italiano con un tono caldo, immaginativo e positivo."
-                ),
+                "content": settings.SETTINGS["system_prompt"],
             },
             {
                 "role": "user",
