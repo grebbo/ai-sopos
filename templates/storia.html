@@ -9,12 +9,80 @@
 </head>
 <body>
   <div id="reading-progress"></div>
+
   <nav class="reader-toolbar">
     <a href="/" class="toolbar-back">← Home</a>
+    <div class="toolbar-controls">
+      <button id="btn-font-dec" class="toolbar-btn" aria-label="Riduci testo">A−</button>
+      <button id="btn-font-inc" class="toolbar-btn" aria-label="Aumenta testo">A+</button>
+      <button id="btn-dark" class="toolbar-btn">☀ Giorno</button>
+      <button id="btn-play" class="toolbar-btn">▶ Scorri</button>
+      <input id="scroll-speed" type="range" min="1" max="10" value="3" aria-label="Velocità scorrimento">
+    </div>
   </nav>
+
   <div class="reader-container">
     <h1 class="reader-title">{{ title }}</h1>
     <div class="reader-body">{{ body }}</div>
   </div>
+
+  <script>
+    // Font size — 7 step da 14px a 26px
+    var SIZES = [14, 16, 18, 20, 22, 24, 26];
+    var sizeIdx = 2;
+    var btnDec = document.getElementById('btn-font-dec');
+    var btnInc = document.getElementById('btn-font-inc');
+    function applyFont() {
+      document.documentElement.style.setProperty('--reader-font-size', SIZES[sizeIdx] + 'px');
+      btnDec.disabled = sizeIdx === 0;
+      btnInc.disabled = sizeIdx === SIZES.length - 1;
+    }
+    btnDec.addEventListener('click', function () { sizeIdx = Math.max(0, sizeIdx - 1); applyFont(); });
+    btnInc.addEventListener('click', function () { sizeIdx = Math.min(SIZES.length - 1, sizeIdx + 1); applyFont(); });
+    applyFont();
+
+    // Dark mode
+    var btnDark = document.getElementById('btn-dark');
+    btnDark.addEventListener('click', function () {
+      document.body.classList.toggle('dark');
+      btnDark.textContent = document.body.classList.contains('dark') ? '☾ Notte' : '☀ Giorno';
+    });
+
+    // Progress bar
+    var progressEl = document.getElementById('reading-progress');
+    window.addEventListener('scroll', function () {
+      var total = document.documentElement.scrollHeight - window.innerHeight;
+      progressEl.style.width = total > 0 ? (window.scrollY / total * 100) + '%' : '0%';
+    }, { passive: true });
+
+    // Autoscroll
+    var btnPlay = document.getElementById('btn-play');
+    var speedInput = document.getElementById('scroll-speed');
+    var scrolling = false;
+    var rafId = null;
+    function tick() {
+      if (!scrolling) return;
+      window.scrollBy(0, speedInput.value * 0.3);
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+        scrolling = false;
+        btnPlay.textContent = '▶ Scorri';
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    btnPlay.addEventListener('click', function () {
+      scrolling = !scrolling;
+      btnPlay.textContent = scrolling ? '⏸ Pausa' : '▶ Scorri';
+      if (scrolling) rafId = requestAnimationFrame(tick);
+    });
+    function stopScroll() {
+      if (!scrolling) return;
+      scrolling = false;
+      btnPlay.textContent = '▶ Scorri';
+      cancelAnimationFrame(rafId);
+    }
+    window.addEventListener('wheel', stopScroll, { passive: true });
+    window.addEventListener('touchmove', stopScroll, { passive: true });
+  </script>
 </body>
 </html>
