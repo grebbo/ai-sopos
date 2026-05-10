@@ -139,7 +139,10 @@ def test_get_storia_ritorna_contenuto(client):
     )
     response = c.get('/storia/fiaba_prova.txt')
     assert response.status_code == 200
-    assert b'La lepre e la tartaruga' in response.data
+    assert response.content_type.startswith('text/html')
+    html = response.data.decode('utf-8')
+    assert 'La lepre e la tartaruga' in html
+    assert "C&#39;era una volta..." in html
 
 
 def test_get_storia_inesistente_ritorna_404(client):

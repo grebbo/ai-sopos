@@ -97,7 +97,10 @@ def storia(filename):
         abort(404)
     with open(path, encoding='utf-8') as f:
         content = f.read()
-    return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+    parts = content.split('\n', 2)
+    title = parts[0].strip()
+    body = parts[2].strip() if len(parts) > 2 else ''
+    return render_template('storia.html', title=title, body=body, filename=filename)
 
 
 if __name__ == '__main__':
