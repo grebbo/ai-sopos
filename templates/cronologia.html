@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storico — AI-Sopos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI-Sopos</h1>
+      <p class="subtitle">Generatore di Fiabe</p>
+    </header>
+    <section class="history-section">
+      <h2>Ultime fiabe generate</h2>
+      {% if history %}
+      <ul>
+        {% for item in history %}
+        <li>
+          <a href="/storia/{{ item.filename }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty">Nessuna fiaba ancora generata.</p>
+      {% endif %}
+    </section>
+    <p style="margin-top:1.5rem"><a href="/" style="color:#5c3d1e">← Torna alla home</a></p>
+  </div>
+</body>
+</html>

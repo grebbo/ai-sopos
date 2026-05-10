@@ -153,3 +153,24 @@ def test_get_storia_inesistente_ritorna_404(client):
 def test_get_storia_non_txt_ritorna_404(client):
     c, _ = client
     assert c.get('/storia/script.py').status_code == 404
+
+
+def test_get_cronologia_ritorna_200(client):
+    c, _ = client
+    response = c.get('/cronologia')
+    assert response.status_code == 200
+
+
+def test_get_cronologia_mostra_fiabe(client):
+    c, tmp_path = client
+    f = tmp_path / "fiaba_test.txt"
+    f.write_text("Il drago biscottino\n=====\n\nCorpo della storia", encoding='utf-8')
+    html = c.get('/cronologia').data.decode('utf-8')
+    assert 'Il drago biscottino' in html
+    assert '/storia/fiaba_test.txt' in html
+
+
+def test_get_cronologia_vuota_mostra_messaggio(client):
+    c, _ = client
+    html = c.get('/cronologia').data.decode('utf-8')
+    assert 'Nessuna fiaba' in html

@@ -103,5 +103,10 @@ def storia(filename):
     return render_template('storia.html', title=title, body=body, filename=filename)
 
 
+@app.route('/cronologia')
+def cronologia():
+    return render_template('cronologia.html', history=get_history())
+
+
 if __name__ == '__main__':
     app.run(debug=True)
