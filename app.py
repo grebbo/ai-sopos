@@ -69,7 +69,7 @@ def genera():
         title, body = generate_story(tema, keywords, lunghezza)
         filepath = save_story(title, body, tema)
         filename = os.path.basename(filepath)
-        return redirect(url_for('index', nuova=filename))
+        return redirect(url_for('storia', filename=filename))
     except EnvironmentError as e:
         error_msg = str(e)
     except Exception as e:

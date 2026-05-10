@@ -81,7 +81,7 @@ def test_post_genera_redirect(client):
             'parole_chiave': '',
         })
     assert response.status_code == 302
-    assert 'nuova=titolo_test.txt' in response.headers['Location']
+    assert '/storia/titolo_test.txt' in response.headers['Location']
 
 
 def test_post_genera_passa_parametri_corretti(client):
