@@ -77,7 +77,7 @@ def test_post_genera_tema_random_non_passa_random_alla_api(client):
     with patch('app.generate_story', return_value=('T', 'B')) as mock_gen, \
          patch('app.save_story', return_value=str(tmp_path / 't.txt')), \
          patch('app.random.choice', return_value='fantasy'):
-        c.post('/genera', data={'tema': 'random', 'lunghezza': 'media', 'parole_chiave': ''})
+        c.post('/genera', data={'tema': 'random', 'lunghezza': 'media', 'parole_chiave_json': '[]'})
     called_theme = mock_gen.call_args[0][0]
     assert called_theme != 'random'
 
@@ -88,7 +88,7 @@ def test_post_genera_environment_error_mostra_messaggio(client):
         response = c.post('/genera', data={
             'tema': 'animali',
             'lunghezza': 'media',
-            'parole_chiave': '',
+            'parole_chiave_json': '[]',
         })
     assert response.status_code == 500
     assert b'API key mancante' in response.data
@@ -100,7 +100,7 @@ def test_post_genera_errore_generico_mostra_messaggio(client):
         response = c.post('/genera', data={
             'tema': 'fantasy',
             'lunghezza': 'corta',
-            'parole_chiave': '',
+            'parole_chiave_json': '[]',
         })
     assert response.status_code == 500
     assert b'timeout' in response.data
@@ -150,3 +150,63 @@ def test_get_cronologia_vuota_mostra_messaggio(client):
     c, _ = client
     html = c.get('/cronologia').data.decode('utf-8')
     assert 'Nessuna fiaba' in html
+
+
+def test_get_impostazioni_ritorna_200(client):
+    c, _ = client
+    response = c.get('/impostazioni')
+    assert response.status_code == 200
+
+
+def test_get_impostazioni_mostra_system_prompt(client):
+    c, _ = client
+    import settings
+    html = c.get('/impostazioni').data.decode('utf-8')
+    assert settings.SETTINGS['system_prompt'][:30] in html
+
+
+def test_post_impostazioni_redirect(client):
+    c, _ = client
+    response = c.post('/impostazioni', data={
+        'system_prompt': 'Narratore di prova.',
+        'theme_0_label': 'Animali',
+        'theme_0_prompt': 'animali parlanti',
+        'font_size_index': '2',
+        'scroll_speed': '3',
+    })
+    assert response.status_code == 302
+    assert 'impostazioni' in response.headers['Location']
+
+
+def test_post_impostazioni_aggiorna_system_prompt(client):
+    c, _ = client
+    import settings
+    original = settings.SETTINGS['system_prompt']
+    try:
+        c.post('/impostazioni', data={
+            'system_prompt': 'Narratore modificato.',
+            'theme_0_label': 'Animali',
+            'theme_0_prompt': 'animali parlanti',
+            'font_size_index': '2',
+            'scroll_speed': '3',
+        })
+        assert settings.SETTINGS['system_prompt'] == 'Narratore modificato.'
+    finally:
+        settings.SETTINGS['system_prompt'] = original
+
+
+def test_post_impostazioni_tronca_system_prompt_a_1000(client):
+    c, _ = client
+    import settings
+    original = settings.SETTINGS['system_prompt']
+    try:
+        c.post('/impostazioni', data={
+            'system_prompt': 'x' * 1500,
+            'theme_0_label': 'Animali',
+            'theme_0_prompt': 'animali parlanti',
+            'font_size_index': '2',
+            'scroll_speed': '3',
+        })
+        assert len(settings.SETTINGS['system_prompt']) == 1000
+    finally:
+        settings.SETTINGS['system_prompt'] = original
