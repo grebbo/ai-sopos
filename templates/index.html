@@ -31,11 +31,11 @@
       <form id="genera-form" action="/genera" method="post">
         <fieldset>
           <legend>Tema</legend>
-          {% for key, info in themes.items() %}
+          {% for key, theme in themes.items() %}
           <label>
             <input type="radio" name="tema" value="{{ key }}"
               {% if form.get('tema') == key %}checked{% endif %}>
-            {{ info.label }} — <small>{{ info.prompt }}</small>
+            {{ theme.label }} — <small>{{ theme.prompt }}</small>
           </label>
           {% endfor %}
           <label>
@@ -57,29 +57,69 @@
         </div>
 
         <div class="field">
-          <label for="parole_chiave_input">Parole chiave <small>(opzionale)</small></label>
+          <label>Parole chiave <small>(opzionale)</small></label>
           <input type="hidden" name="parole_chiave_json" id="parole_chiave_json"
             value="{{ form.get('parole_chiave_json', '[]') }}">
-          <input type="text" id="parole_chiave_input"
-            placeholder="es. mare, conchiglia, amicizia"
-            value="">
+          <div class="chips-field">
+            <div class="chips-container" id="chips-container"></div>
+            <div class="chips-input-row">
+              <input type="text" id="chips-input" placeholder="es. mare, conchiglia, amicizia">
+              <button type="button" id="btn-aggiungi-chip">Aggiungi</button>
+            </div>
+          </div>
         </div>
 
         <div class="form-actions">
           <button type="submit" id="btn-genera">Genera</button>
           <a href="/cronologia" class="link-cronologia">Storico fiabe</a>
+          <a href="/impostazioni" class="link-cronologia">Impostazioni</a>
         </div>
       </form>
     </section>
   </div>
 
   <script>
-    // Sync visible text input to hidden JSON field on form submit
+    // Chips
+    var chips = [];
+    try { chips = JSON.parse(document.getElementById('parole_chiave_json').value) || []; } catch (e) { chips = []; }
+
+    function renderChips() {
+      var container = document.getElementById('chips-container');
+      container.innerHTML = '';
+      chips.forEach(function (chip, i) {
+        var span = document.createElement('span');
+        span.className = 'chip';
+        span.innerHTML = chip + ' <button type="button" aria-label="Rimuovi" onclick="removeChip(' + i + ')">×</button>';
+        container.appendChild(span);
+      });
+      document.getElementById('parole_chiave_json').value = JSON.stringify(chips);
+    }
+
+    function addChip(value) {
+      value = value.trim();
+      if (!value || chips.indexOf(value) !== -1) return;
+      chips.push(value);
+      renderChips();
+      document.getElementById('chips-input').value = '';
+    }
+
+    function removeChip(index) {
+      chips.splice(index, 1);
+      renderChips();
+    }
+
+    document.getElementById('chips-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); addChip(this.value); }
+    });
+    document.getElementById('btn-aggiungi-chip').addEventListener('click', function () {
+      addChip(document.getElementById('chips-input').value);
+    });
+
+    renderChips();
+
+    // Loading overlay
     document.getElementById('genera-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      var raw = document.getElementById('parole_chiave_input').value;
-      var keywords = raw.split(',').map(function(k){ return k.trim(); }).filter(Boolean);
-      document.getElementById('parole_chiave_json').value = JSON.stringify(keywords);
       document.getElementById('btn-genera').disabled = true;
       document.getElementById('loading-overlay').style.display = 'flex';
       this.submit();
