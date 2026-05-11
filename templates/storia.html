@@ -29,7 +29,7 @@
   <script>
     // Font size — 7 step da 14px a 26px
     var SIZES = [14, 16, 18, 20, 22, 24, 26];
-    var sizeIdx = 2;
+    var sizeIdx = {{ reader.font_size_index }};
     var btnDec = document.getElementById('btn-font-dec');
     var btnInc = document.getElementById('btn-font-inc');
     function applyFont() {
@@ -43,6 +43,10 @@
 
     // Dark mode
     var btnDark = document.getElementById('btn-dark');
+    if ({{ 'true' if reader.dark_mode else 'false' }}) {
+      document.body.classList.add('dark');
+      btnDark.textContent = '☾ Notte';
+    }
     btnDark.addEventListener('click', function () {
       document.body.classList.toggle('dark');
       btnDark.textContent = document.body.classList.contains('dark') ? '☾ Notte' : '☀ Giorno';
@@ -58,6 +62,7 @@
     // Autoscroll
     var btnPlay = document.getElementById('btn-play');
     var speedInput = document.getElementById('scroll-speed');
+    speedInput.value = {{ reader.scroll_speed }};
     var scrolling = false;
     var rafId = null;
     function tick() {
