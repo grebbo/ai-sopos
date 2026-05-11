@@ -253,12 +253,26 @@ body.dark #reading-progress { background: #c8a96e; }
 .prompt-counter { color: #888; font-size: .82rem; }
 .theme-row {
   border: 1px solid #e0cfa8; border-radius: 6px;
-  padding: 1rem; margin-bottom: .75rem;
+  padding: .5rem 1rem; margin-bottom: .5rem;
 }
+.theme-row-header {
+  display: flex; align-items: center; gap: .5rem; min-height: 2rem;
+}
+.theme-row-title {
+  flex: 1; font-weight: 500; color: #3a2510; font-size: .95rem;
+}
+.theme-row-actions { display: flex; gap: .4rem; flex-shrink: 0; }
+.btn-toggle {
+  background: none; border: 1px solid #c8a96e; color: #5c3d1e;
+  padding: .2rem .55rem; border-radius: 4px; cursor: pointer;
+  font-size: .8rem; line-height: 1;
+}
+.btn-toggle:hover { background: #f0e8d0; }
+.theme-row-body { padding-top: .75rem; }
 .btn-elimina {
   background: none; border: 1px solid #c0392b; color: #c0392b;
-  padding: .3rem .75rem; border-radius: 4px; cursor: pointer;
-  font-size: .85rem; margin-top: .25rem;
+  padding: .2rem .6rem; border-radius: 4px; cursor: pointer;
+  font-size: .85rem;
 }
 .btn-elimina:hover:not(:disabled) { background: #fdecea; }
 .btn-elimina:disabled { opacity: .35; cursor: default; }

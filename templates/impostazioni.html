@@ -34,15 +34,23 @@
         <div id="themes-list">
           {% for key, theme in s.themes.items() %}
           <div class="theme-row">
-            <div class="field">
-              <label>Nome</label>
-              <input type="text" name="theme_{{ loop.index0 }}_label" value="{{ theme.label }}" required>
+            <div class="theme-row-header">
+              <span class="theme-row-title">{{ theme.label }}</span>
+              <div class="theme-row-actions">
+                <button type="button" class="btn-toggle" onclick="toggleTema(this)" aria-label="Espandi">▼</button>
+                <button type="button" class="btn-elimina" onclick="eliminaTema(this)">Elimina</button>
+              </div>
             </div>
-            <div class="field">
-              <label>Prompt del tema</label>
-              <textarea name="theme_{{ loop.index0 }}_prompt" rows="2" required>{{ theme.prompt }}</textarea>
+            <div class="theme-row-body" hidden>
+              <div class="field">
+                <label>Nome</label>
+                <input type="text" name="theme_{{ loop.index0 }}_label" value="{{ theme.label }}" required>
+              </div>
+              <div class="field">
+                <label>Prompt del tema</label>
+                <textarea name="theme_{{ loop.index0 }}_prompt" rows="2" required>{{ theme.prompt }}</textarea>
+              </div>
             </div>
-            <button type="button" class="btn-elimina" onclick="eliminaTema(this)">Elimina</button>
           </div>
           {% endfor %}
         </div>
@@ -91,6 +99,22 @@
     speedInput.addEventListener('input', function () { speedVal.textContent = speedInput.value; });
 
     // Theme management
+    function toggleTema(btn) {
+      var body = btn.closest('.theme-row').querySelector('.theme-row-body');
+      var open = !body.hidden;
+      body.hidden = open;
+      btn.textContent = open ? '▼' : '▲';
+      btn.setAttribute('aria-label', open ? 'Espandi' : 'Comprimi');
+    }
+
+    function bindTitleSync(row) {
+      var input = row.querySelector('input[name$="_label"]');
+      var title = row.querySelector('.theme-row-title');
+      input.addEventListener('input', function () {
+        title.textContent = input.value || '(senza nome)';
+      });
+    }
+
     function reindexThemes() {
       document.querySelectorAll('#themes-list .theme-row').forEach(function (row, i) {
         row.querySelectorAll('[name]').forEach(function (el) {
@@ -117,16 +141,45 @@
       var idx = list.querySelectorAll('.theme-row').length;
       var div = document.createElement('div');
       div.className = 'theme-row';
-      div.innerHTML =
+      var header = document.createElement('div');
+      header.className = 'theme-row-header';
+      var titleSpan = document.createElement('span');
+      titleSpan.className = 'theme-row-title';
+      titleSpan.textContent = '(senza nome)';
+      var actions = document.createElement('div');
+      actions.className = 'theme-row-actions';
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'btn-toggle';
+      toggleBtn.textContent = '▲';
+      toggleBtn.setAttribute('aria-label', 'Comprimi');
+      toggleBtn.onclick = function () { toggleTema(this); };
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'btn-elimina';
+      delBtn.textContent = 'Elimina';
+      delBtn.onclick = function () { eliminaTema(this); };
+      actions.appendChild(toggleBtn);
+      actions.appendChild(delBtn);
+      header.appendChild(titleSpan);
+      header.appendChild(actions);
+      var body = document.createElement('div');
+      body.className = 'theme-row-body';
+      body.innerHTML =
         '<div class="field"><label>Nome</label>' +
         '<input type="text" name="theme_' + idx + '_label" required></div>' +
         '<div class="field"><label>Prompt del tema</label>' +
-        '<textarea name="theme_' + idx + '_prompt" rows="2" required></textarea></div>' +
-        '<button type="button" class="btn-elimina" onclick="eliminaTema(this)">Elimina</button>';
+        '<textarea name="theme_' + idx + '_prompt" rows="2" required></textarea></div>';
+      div.appendChild(header);
+      div.appendChild(body);
       list.appendChild(div);
+      bindTitleSync(div);
       updateDeleteButtons();
+      div.querySelector('input').focus();
     });
 
+    // Bind title sync on existing rows
+    document.querySelectorAll('#themes-list .theme-row').forEach(bindTitleSync);
     updateDeleteButtons();
   </script>
 </body>
