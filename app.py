@@ -142,10 +142,16 @@ def salva_impostazioni():
     if not themes:
         themes = settings.SETTINGS['themes']
 
-    font_size_index = int(request.form.get('font_size_index', 2))
+    try:
+        font_size_index = int(request.form.get('font_size_index', 2))
+    except (ValueError, TypeError):
+        font_size_index = 2
     font_size_index = max(0, min(6, font_size_index))
     dark_mode = 'dark_mode' in request.form
-    scroll_speed = int(request.form.get('scroll_speed', 3))
+    try:
+        scroll_speed = int(request.form.get('scroll_speed', 3))
+    except (ValueError, TypeError):
+        scroll_speed = 3
     scroll_speed = max(1, min(10, scroll_speed))
 
     settings.SETTINGS['system_prompt'] = system_prompt
