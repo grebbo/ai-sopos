@@ -74,7 +74,7 @@ python main.py --tema animali --no-preview
 | `--tema` | `animali` `fantasy` `avventura` | — | Tema della fiaba |
 | `--temi` | — | — | Mostra i temi ed esce |
 | `--parole-chiave` | stringa | — | Ispirazione tematica, separate da virgola |
-| `--lunghezza` | `corta` `media` `lunga` | `media` | Lunghezza approssimativa |
+| `--lunghezza` | `corta` `media` `lunga` | `corta` | Lunghezza approssimativa |
 | `--output` | nome file | auto | Nome file nella cartella `output/` |
 | `--no-preview` | — | — | Non mostra la fiaba in console |
 
@@ -113,15 +113,34 @@ C'era una volta...
 Vuoi rigenerare la fiaba? (s/n):
 ```
 
+## Interfaccia web
+
+Oltre alla CLI, l'app espone un'interfaccia web Flask su `http://localhost:5000`:
+
+```bash
+python app.py
+```
+
+- **`/`** — form per generare una fiaba (tema, lunghezza, parole chiave a chip)
+- **`/storia/<file>`** — visualizzatore con font size, dark mode e autoscroll
+- **`/cronologia`** — ultime 10 fiabe generate
+- **`/impostazioni`** — modifica prompt di sistema, temi e preferenze del lettore
+
+Le impostazioni sono in-memory e si azzerano al riavvio del server.
+
 ## Struttura del progetto
 
 ```
 ai-sopos/
-├── main.py          # Entry point e CLI
-├── generator.py     # Chiamata OpenAI e parsing titolo/testo
-├── output.py        # Salvataggio su file
-├── config.py        # Modello, temi, lunghezze
+├── main.py              # Entry point e CLI
+├── generator.py         # Chiamata OpenAI e parsing titolo/testo
+├── output.py            # Salvataggio su file
+├── config.py            # Modello, lunghezze (costanti statiche)
+├── settings.py          # Impostazioni runtime (temi, prompt, preferenze lettore)
+├── app.py               # Flask web app
+├── templates/           # Template Jinja2
+├── static/style.css     # CSS senza framework esterni
 ├── requirements.txt
 ├── .env.example
-└── output/          # Fiabe generate (creata al primo avvio)
+└── output/              # Fiabe generate (creata al primo avvio)
 ```

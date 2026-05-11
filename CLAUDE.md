@@ -4,13 +4,14 @@ Applicativo Python per la generazione di fiabe per bambini tramite API OpenAI. D
 
 ## Funzionalità principali
 
-- Generazione casuale o guidata da parole chiave (usate come ispirazione, non letteralmente)
-- Scelta del tema tra: `animali`, `fantasy`, `avventura`
-- Lunghezza selezionabile: `corta` (~300 parole), `media` (~600), `lunga` (~1000)
+- Generazione casuale o guidata da parole chiave (chip interattive, usate come ispirazione non letteralmente)
+- Scelta del tema tra quelli configurati (default: `animali`, `fantasy`, `avventura`) — modificabili da `/impostazioni`
+- Lunghezza selezionabile: `corta` (~300 parole, default), `media` (~600), `lunga` (~1000)
 - Titolo automatico generato dal modello e integrato nel nome del file di output
 - Output su file `.txt` nella cartella `output/`
 - **CLI**: anteprima in console con possibilità di rigenerare prima di salvare
-- **Web**: storico delle ultime 10 fiabe, form per generare nuove storie
+- **Web**: storico delle ultime 10 fiabe, form per generare nuove storie, pagina impostazioni
+- **Impostazioni web** (`/impostazioni`): modifica prompt di sistema, temi (label, prompt, aggiungi/elimina), preferenze lettore (font size, dark mode, scroll speed) — in-memory, reset al riavvio
 
 ## Struttura
 
@@ -18,16 +19,20 @@ Applicativo Python per la generazione di fiabe per bambini tramite API OpenAI. D
 main.py             # CLI (argparse) ed entry point
 generator.py        # Prompt OpenAI e parsing della risposta (titolo + corpo)
 output.py           # Salvataggio su file con nome derivato dal titolo
-config.py           # Costanti: modello, temi, lunghezze
-app.py              # Flask app: route GET /, POST /genera, GET /storia/<filename>
+config.py           # Costanti statiche: modello, lunghezze (non modificabili a runtime)
+settings.py         # SETTINGS dict runtime: system_prompt, themes, reader prefs, default_length
+app.py              # Flask app: /, /genera, /storia/<filename>, /cronologia, /impostazioni
 templates/
-  index.html        # Template unico: form + fiaba generata + storico
+  index.html        # Form generazione con chips parole chiave
+  impostazioni.html # Pagina impostazioni (prompt, temi, preferenze lettore)
+  storia.html       # Visualizzatore fiaba con reader preferences da sessione
+  cronologia.html   # Storico ultime 10 fiabe
 static/
   style.css         # CSS minimale senza framework esterni
 tests/
   conftest.py       # Fixture client Flask con tmp_path
   test_app.py       # Test per tutte le route e get_history()
-Dockerfile          # Immagine Python 3.12-slim + Gunicorn
+Dockerfile          # Immagine Python 3.12-slim + Gunicorn (1 worker)
 docker-compose.yml  # Servizio con volume output/ e riavvio automatico
 ```
 
@@ -37,7 +42,13 @@ docker-compose.yml  # Servizio con volume output/ e riavvio automatico
 
 ## Variabili d'ambiente
 
-`OPENAI_API_KEY` — caricata da `.env` tramite `python-dotenv`. Il file `.env` non è versionato.
+| Variabile | Obbligatoria | Descrizione |
+|---|---|---|
+| `OPENAI_API_KEY` | Sì | Caricata da `.env` tramite `python-dotenv`. |
+| `SECRET_KEY` | Raccomandata | Chiave per firmare i cookie di sessione Flask. Se assente usa un fallback hardcoded (accettabile solo in sviluppo locale). |
+| `TS_AUTHKEY` | Solo Docker/Tailscale | Auth key per il container sidecar Tailscale. |
+
+Il file `.env` non è versionato.
 
 ## Avvio
 
