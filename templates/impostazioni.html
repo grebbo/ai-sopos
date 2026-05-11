@@ -34,7 +34,6 @@
         <div id="themes-list">
           {% for key, theme in s.themes.items() %}
           <div class="theme-row">
-            <input type="hidden" name="theme_{{ loop.index0 }}_key" value="{{ key }}">
             <div class="field">
               <label>Nome</label>
               <input type="text" name="theme_{{ loop.index0 }}_label" value="{{ theme.label }}" required>
@@ -119,7 +118,6 @@
       var div = document.createElement('div');
       div.className = 'theme-row';
       div.innerHTML =
-        '<input type="hidden" name="theme_' + idx + '_key" value="">' +
         '<div class="field"><label>Nome</label>' +
         '<input type="text" name="theme_' + idx + '_label" required></div>' +
         '<div class="field"><label>Prompt del tema</label>' +
