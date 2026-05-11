@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impostazioni — AI-Sopos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI-Sopos</h1>
+      <p class="subtitle">Impostazioni</p>
+    </header>
+
+    {% if request.args.get('saved') %}
+    <div class="success">Impostazioni salvate.</div>
+    {% endif %}
+
+    <form method="post" action="/impostazioni">
+
+      <fieldset>
+        <legend>Prompt di sistema</legend>
+        <div class="field">
+          <label for="system_prompt">Personalità del narratore</label>
+          <textarea name="system_prompt" id="system_prompt" maxlength="1000" rows="4">{{ s.system_prompt }}</textarea>
+          <small class="prompt-counter"><span id="prompt-counter">{{ s.system_prompt | length }}</span> / 1000</small>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Temi</legend>
+        <div id="themes-list">
+          {% for key, theme in s.themes.items() %}
+          <div class="theme-row">
+            <input type="hidden" name="theme_{{ loop.index0 }}_key" value="{{ key }}">
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" name="theme_{{ loop.index0 }}_label" value="{{ theme.label }}" required>
+            </div>
+            <div class="field">
+              <label>Prompt del tema</label>
+              <textarea name="theme_{{ loop.index0 }}_prompt" rows="2" required>{{ theme.prompt }}</textarea>
+            </div>
+            <button type="button" class="btn-elimina" onclick="eliminaTema(this)">Elimina</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn-aggiungi" id="btn-aggiungi-tema">+ Aggiungi tema</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Preferenze lettore</legend>
+        <div class="field">
+          <label for="font_size_index">Dimensione testo</label>
+          <select name="font_size_index" id="font_size_index">
+            {% for i, px in [(0,14),(1,16),(2,18),(3,20),(4,22),(5,24),(6,26)] %}
+            <option value="{{ i }}" {% if s.reader.font_size_index == i %}selected{% endif %}>{{ px }}px</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="dark_mode" {% if s.reader.dark_mode %}checked{% endif %}>
+            Modalità notte di default
+          </label>
+        </div>
+        <div class="field">
+          <label for="scroll_speed">Velocità scorrimento: <span id="speed-val">{{ s.reader.scroll_speed }}</span></label>
+          <input type="range" name="scroll_speed" id="scroll_speed"
+                 min="1" max="10" value="{{ s.reader.scroll_speed }}">
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit">Salva impostazioni</button>
+        <a href="/" class="link-cronologia">← Home</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Prompt counter
+    var ta = document.getElementById('system_prompt');
+    var counter = document.getElementById('prompt-counter');
+    ta.addEventListener('input', function () { counter.textContent = ta.value.length; });
+
+    // Scroll speed display
+    var speedInput = document.getElementById('scroll_speed');
+    var speedVal = document.getElementById('speed-val');
+    speedInput.addEventListener('input', function () { speedVal.textContent = speedInput.value; });
+
+    // Theme management
+    function reindexThemes() {
+      document.querySelectorAll('#themes-list .theme-row').forEach(function (row, i) {
+        row.querySelectorAll('[name]').forEach(function (el) {
+          el.name = el.name.replace(/theme_\d+_/, 'theme_' + i + '_');
+        });
+      });
+    }
+
+    function updateDeleteButtons() {
+      var rows = document.querySelectorAll('#themes-list .theme-row');
+      rows.forEach(function (r) {
+        r.querySelector('.btn-elimina').disabled = rows.length === 1;
+      });
+    }
+
+    function eliminaTema(btn) {
+      btn.closest('.theme-row').remove();
+      reindexThemes();
+      updateDeleteButtons();
+    }
+
+    document.getElementById('btn-aggiungi-tema').addEventListener('click', function () {
+      var list = document.getElementById('themes-list');
+      var idx = list.querySelectorAll('.theme-row').length;
+      var div = document.createElement('div');
+      div.className = 'theme-row';
+      div.innerHTML =
+        '<input type="hidden" name="theme_' + idx + '_key" value="">' +
+        '<div class="field"><label>Nome</label>' +
+        '<input type="text" name="theme_' + idx + '_label" required></div>' +
+        '<div class="field"><label>Prompt del tema</label>' +
+        '<textarea name="theme_' + idx + '_prompt" rows="2" required></textarea></div>' +
+        '<button type="button" class="btn-elimina" onclick="eliminaTema(this)">Elimina</button>';
+      list.appendChild(div);
+      updateDeleteButtons();
+    });
+
+    updateDeleteButtons();
+  </script>
+</body>
+</html>
