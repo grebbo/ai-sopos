@@ -43,7 +43,7 @@ def test_get_route_contiene_form(client):
     assert 'method="post"' in html
     assert 'name="tema"' in html
     assert 'name="lunghezza"' in html
-    assert 'name="parole_chiave"' in html
+    assert 'name="parole_chiave_json"' in html
 
 
 
@@ -54,7 +54,7 @@ def test_post_genera_redirect(client):
         response = c.post('/genera', data={
             'tema': 'animali',
             'lunghezza': 'corta',
-            'parole_chiave': '',
+            'parole_chiave_json': '[]',
         })
     assert response.status_code == 302
     assert '/storia/titolo_test.txt' in response.headers['Location']
@@ -67,7 +67,7 @@ def test_post_genera_passa_parametri_corretti(client):
         c.post('/genera', data={
             'tema': 'avventura',
             'lunghezza': 'lunga',
-            'parole_chiave': 'mare, conchiglia',
+            'parole_chiave_json': '["mare", "conchiglia"]',
         })
     mock_gen.assert_called_once_with('avventura', ['mare', 'conchiglia'], 'lunga')
 

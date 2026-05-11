@@ -31,11 +31,11 @@
       <form id="genera-form" action="/genera" method="post">
         <fieldset>
           <legend>Tema</legend>
-          {% for key, desc in themes.items() %}
+          {% for key, info in themes.items() %}
           <label>
             <input type="radio" name="tema" value="{{ key }}"
               {% if form.get('tema') == key %}checked{% endif %}>
-            {{ key|capitalize }} — <small>{{ desc }}</small>
+            {{ info.label }} — <small>{{ info.prompt }}</small>
           </label>
           {% endfor %}
           <label>
@@ -49,7 +49,7 @@
           <label for="lunghezza">Lunghezza</label>
           <select name="lunghezza" id="lunghezza">
             {% for l in lengths %}
-            <option value="{{ l }}" {% if form.get('lunghezza', 'media') == l %}selected{% endif %}>
+            <option value="{{ l }}" {% if form.get('lunghezza', default_length) == l %}selected{% endif %}>
               {{ l|capitalize }}
             </option>
             {% endfor %}
@@ -57,10 +57,12 @@
         </div>
 
         <div class="field">
-          <label for="parole_chiave">Parole chiave <small>(opzionale)</small></label>
-          <input type="text" name="parole_chiave" id="parole_chiave"
+          <label for="parole_chiave_input">Parole chiave <small>(opzionale)</small></label>
+          <input type="hidden" name="parole_chiave_json" id="parole_chiave_json"
+            value="{{ form.get('parole_chiave_json', '[]') }}">
+          <input type="text" id="parole_chiave_input"
             placeholder="es. mare, conchiglia, amicizia"
-            value="{{ form.get('parole_chiave', '') }}">
+            value="">
         </div>
 
         <div class="form-actions">
@@ -72,8 +74,12 @@
   </div>
 
   <script>
+    // Sync visible text input to hidden JSON field on form submit
     document.getElementById('genera-form').addEventListener('submit', function (e) {
       e.preventDefault();
+      var raw = document.getElementById('parole_chiave_input').value;
+      var keywords = raw.split(',').map(function(k){ return k.trim(); }).filter(Boolean);
+      document.getElementById('parole_chiave_json').value = JSON.stringify(keywords);
       document.getElementById('btn-genera').disabled = true;
       document.getElementById('loading-overlay').style.display = 'flex';
       this.submit();
