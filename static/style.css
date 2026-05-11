@@ -17,9 +17,20 @@ header {
   margin-bottom: 2rem;
   border-bottom: 2px solid #c8a96e;
   padding-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 header h1 { font-size: 2rem; color: #5c3d1e; }
 header .subtitle { color: #888; font-style: italic; }
+.header-nav { display: flex; gap: .5rem; padding-bottom: .15rem; }
+.icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem;
+  color: #5c3d1e; border: 1px solid #c8a96e;
+  border-radius: 6px; text-decoration: none;
+}
+.icon-btn:hover { background: #f0e8d0; }
 
 .error {
   background: #fdecea;
