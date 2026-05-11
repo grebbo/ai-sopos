@@ -89,7 +89,13 @@
       chips.forEach(function (chip, i) {
         var span = document.createElement('span');
         span.className = 'chip';
-        span.innerHTML = chip + ' <button type="button" aria-label="Rimuovi" onclick="removeChip(' + i + ')">×</button>';
+        span.appendChild(document.createTextNode(chip + ' '));
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Rimuovi');
+        btn.textContent = '×';
+        btn.onclick = (function (idx) { return function () { removeChip(idx); }; })(i);
+        span.appendChild(btn);
         container.appendChild(span);
       });
       document.getElementById('parole_chiave_json').value = JSON.stringify(chips);
